@@ -25,7 +25,7 @@ def login():
     r = requests.post(LOGIN_API, headers=keep_headers, data=data)
     if r.ok:
         print("登录成功")
-        token = r.json()["data"]["token"]
+        token = (r.json().get("data") or {}).get("token")
         keep_headers["Authorization"] = f"Bearer {token}"
         return get_run_id()
     else:
@@ -40,8 +40,8 @@ def get_run_id():
         r = requests.get(RUN_DATA_API.format(
             last_date=last_date), headers=keep_headers)
         if r.ok:
-            last_date = r.json()["data"]["lastTimestamp"]
-            records = r.json().get("data").get("records")
+            last_date = (r.json().get("data") or {}).get("lastTimestamp")
+            records = (r.json().get("data") or {}).get("records") or []
             logs = [item.get("stats") for sublist in records for item in sublist['logs']]
             for log in logs:
                 if log.get("id")==latest_id:
