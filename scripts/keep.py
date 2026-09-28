@@ -42,7 +42,7 @@ def get_run_id():
         if r.ok:
             last_date = (r.json().get("data") or {}).get("lastTimestamp")
             records = (r.json().get("data") or {}).get("records") or []
-            logs = [item.get("stats") for sublist in records for item in sublist['logs']]
+            logs = [item.get("stats") for sublist in records for item in (sublist.get("logs") or []) if item.get("stats")]
             for log in logs:
                 if log.get("id")==latest_id:
                     return results
